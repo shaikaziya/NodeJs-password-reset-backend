@@ -10,7 +10,7 @@ const router = express.Router();
 router.post("/signup", async (request, response) => {
     const { email, password } = request.body;
 
-    const isUserExist = await client.db("b37wd").collection("users").findOne({ email: email })
+    const isUserExist = await client.db("b37wdclass").collection("users").findOne({ email: email })
 
     if (isUserExist) {
         response.status(400).send({ message: "Username already taken" })
@@ -19,7 +19,7 @@ router.post("/signup", async (request, response) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt)
-    const result = await client.db("b37wd").collection("users").insertOne({ email: email, password: hashedPassword });
+    const result = await client.db("b37wdclass").collection("users").insertOne({ email: email, password: hashedPassword });
     response.send(result)
 })
 
@@ -27,7 +27,7 @@ router.post("/forgot-password", async (request, response) => {
     const { email } = request.body;
     try{
         //Make sure user exists in database
-        const oldUser = await client.db("b37wd").collection("users").findOne({ email: email })
+        const oldUser = await client.db("b37wdclass").collection("users").findOne({ email: email })
         if (!oldUser) {
             response.status(400).send({ message: "User not exists!!" })
             return;
@@ -77,7 +77,7 @@ router.post("/forgot-password", async (request, response) => {
 router.get("/reset-password/:id/:token", async (request, response) => {
     const { id, token } = request.params;
     //check if this id exist in database
-    const oldUser = await client.db("b37wd").collection("users").findOne({ _id: ObjectId(id) })
+    const oldUser = await client.db("b37wdclass").collection("users").findOne({ _id: ObjectId(id) })
     if(!oldUser){
         response.status(400).send({ message: "User not exists!!"})
         return;
@@ -98,7 +98,7 @@ router.post("/reset-password/:id/:token", async (request, response) => {
     const { password } = request.body;
 
     //check if this id exist in database
-    const oldUser = await client.db("b37wd").collection("users").findOne({ _id: ObjectId(id) })
+    const oldUser = await client.db("b37wdclass").collection("users").findOne({ _id: ObjectId(id) })
     if(!oldUser){
         response.status(400).send({ message: "User not exists!!"})
         return;
@@ -108,7 +108,7 @@ router.post("/reset-password/:id/:token", async (request, response) => {
         const verify = jwt.verify(token,secret)
         const salt = await bcrypt.genSalt(10);
         const encryptedPassword = await bcrypt.hash(password,salt)
-        const updatePassword = await client.db("b37wd").collection("users").updateOne({ _id: ObjectId(id) }, { $set: {password : encryptedPassword} })
+        const updatePassword = await client.db("b37wdclass").collection("users").updateOne({ _id: ObjectId(id) }, { $set: {password : encryptedPassword} })
         response.send({message: "Password updated"})
     }
     catch(error){
